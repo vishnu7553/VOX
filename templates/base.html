@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Authenticator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Audio<span>Authenticator</span></h1>
+            <p class="tagline">Detect synthetic audio with precision</p>
+        </header>
+        
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+        
+        <footer>
+            <p>VOX</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        let mediaRecorder;
+        let audioChunks = [];
+        
+        document.getElementById('recordBtn').addEventListener('click', async function() {
+            const button = this;
+            const status = document.getElementById('recordingStatus');
+            
+            if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+                // Start recording
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+                    
+                    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                    
+                    mediaRecorder.onstop = async () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                        const formData = new FormData();
+                        formData.append('audio', audioBlob, 'recording.wav');
+                        
+                        // Submit to your existing upload endpoint
+                        const response = await fetch('/upload', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        if (response.ok) {
+                            window.location.href = "/results";  // Redirect to results
+                        }
+                    };
+                    
+                    mediaRecorder.start();
+                    button.innerHTML = `
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <rect x="6" y="6" width="12" height="12"/>
+                        </svg>
+                        Stop Recording
+                    `;
+                    status.textContent = "Recording...";
+                } catch (error) {
+                    status.textContent = "Error accessing microphone";
+                }
+            } else {
+                // Stop recording
+                mediaRecorder.stop();
+                button.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                    </svg>
+                    Start Recording
+                `;
+                status.textContent = "Processing...";
+            }
+        });
+    </script>
+</body>
+</html>

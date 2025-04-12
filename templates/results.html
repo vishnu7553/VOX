@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="results-container">
+    <div class="results-header">
+        <h2>Analysis Results</h2>
+        <p class="file-info">File: {{ filename }}</p>
+    </div>
+    
+    <div class="result-box">
+        <div class="spectrogram-placeholder">
+            <!-- Placeholder for spectrogram visualization -->
+            <div class="waveform"></div>
+        </div>
+        
+        <div class="verdict">
+            <h3>Authenticity Verdict</h3>
+            <div class="verdict-badge {% if is_real %}real{% else %}fake{% endif %}">
+                {% if is_real %}
+                    <svg class="verdict-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                    </svg>
+                    GENUINE AUDIO
+                {% else %}
+                    <svg class="verdict-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>
+                    </svg>
+                    SYNTHETIC AUDIO
+                {% endif %}
+            </div>
+            
+            <div class="probability-container">
+                <div class="probability-group">
+                    <h4 class="probability-label">Human Voice Confidence</h4>
+                    <div class="probability-bar">
+                        <div class="probability-fill human-fill" style="width: {{ human_prob }}%;">
+                            <span class="probability-value">{{ "%.1f"|format(human_prob) }}%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="probability-group">
+                    <h4 class="probability-label">AI Generated Confidence</h4>
+                    <div class="probability-bar">
+                        <div class="probability-fill ai-fill" style="width: {{ ai_prob }}%;">
+                            <span class="probability-value">{{ "%.1f"|format(ai_prob) }}%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <!-- Simple Prediction FAQ -->
+    <div class="prediction-faq">
+        <h3>Understanding Your Results</h3>
+        
+        <div class="faq-item">
+            <div class="faq-question">What do the percentages mean?</div>
+            <div class="faq-answer">
+                The numbers show how confident our system is that the voice is <strong>human (green)</strong> or <strong>AI-generated (red)</strong>. 
+                <br><br>
+                <span class="confidence-example human-example">>80%</span> = Very likely
+                <br>
+                <span class="confidence-example">50-80%</span> = Possibly
+                <br>
+                <span class="confidence-example ai-example"><50%</span> = Unlikely
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">Could the results be wrong?</div>
+            <div class="faq-answer">
+                Yes, in rare cases. Our system is about <strong>90% accurate</strong>. Errors may occur with:
+                <br><br>
+                • Very noisy recordings<br>
+                • Professional voice actors<br>
+                • New AI voice technologies
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">Why does my audio show both colors?</div>
+            <div class="faq-answer">
+                Most voices have some characteristics of both. Only worry if:
+                <br><br>
+                • The <span style="color: var(--danger)">red bar</span> is much higher than expected<br>
+                • You suspect the audio was altered
+            </div>
+        </div>
+    </div>
+    </div>
+    
+    <div class="action-buttons">
+        <a href="/" class="button">Analyze Another</a>
+        <a href="/learn_more" class="button secondary">Learn More</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="upload-container">
+    <div class="upload-box">
+        <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+        </svg>
+        <h2>Upload Audio File</h2>
+        <p class="file-types">Supports: WAV, MP3, FLAC</p>
+        
+        <form id="upload-form" method="POST" action="/upload" enctype="multipart/form-data">
+            <input type="file" id="file-input" name="file" accept="audio/*" required>
+            <label for="file-input" class="file-label">
+                <span class="file-button">Choose File</span>
+                <span class="file-name">No file selected</span>
+            </label>
+            
+            <button type="submit" class="analyze-button" disabled>
+                Analyze Audio
+                <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </button>
+
+        </form>
+        <div class="recording-section">
+            <h3>Or Record Live Audio</h3>
+            <button id="recordBtn" class="button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                </svg>
+                Start Recording
+            </button>
+            <p id="recordingStatus"></p>
+        </div>
+    </div>
+    
+    <div class="info-box" style="margin: 0 auto;">
+        <h3>How it works</h3>
+        <ol>
+            <li>Upload an audio file (max 10MB)</li>
+            <li>Our AI analyzes spectral patterns</li>
+            <li>Get authenticity results in seconds</li>
+        </ol>
+    </div>
+</div>
+{% endblock %}
